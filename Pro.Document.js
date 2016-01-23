@@ -546,7 +546,7 @@ Questions/Comments: jacobheater@gmail.com
     },
     text: function(text, appendPrepend) {
       var _text = null;
-      if (text) {
+      if (pro.isDefined(text)) {
         if (pro.isObject(text)) {
           if (pro.isClass(text)) {
             _text = text.text();
@@ -556,7 +556,7 @@ Questions/Comments: jacobheater@gmail.com
         } else if (pro.isString(text)) {
           _text = text;
         }
-        if (_text) {
+        if (pro.isDefined(_text)) {
           this.forEach(function(i, o) {
             o.innerText = appendPrepend === 1 ? o.innerText + _text : appendPrepend === 2 ? _text + o.innerText : text;
           });
