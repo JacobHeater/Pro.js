@@ -16,8 +16,16 @@
             padding: 0;
             margin: 0;
         }
+
+        pre {
+            border: 1px solid white;
+        }
         /*IDs*/
         /*Classes*/
+        .heading-lg.title.logo {
+            color: white;
+            text-shadow: 0 0 20px #0094ff;
+        }
         .pro-main-content {
             width: 70%;
             margin: 0 auto;
@@ -72,13 +80,24 @@
         }
 
         /*Responsive*/
-        @media only screen and (min-device-width : 320px) and (max-device-width : 480px), only screen and (min-width : 321px) {
+        @media only screen and (min-device-width : 320px) and (max-device-width : 480px), only screen and (max-device-width : 740px) {
+            html, body {
+                background-color: #484848;
+            }
+
+            body {
+                padding: 0 10px;
+            }
+
             #observeOutput {
                 display: block;
                 margin-top: 5px;
             }
+
             .pro-main-content {
-                width: 90%;
+                width: 100%;
+                border: none;
+                padding: 0;
             }
 
             .heading-lg {
@@ -101,18 +120,27 @@
             }
         }
     </style>
-    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <meta name="viewport" content="initial-scale=1.0,user-scalable=no,maximum-scale=1,width=device-width" />
 </head>
 <body>
     <div class="pro-main-content">
         <div class="text-center">
-            <div class="heading-lg inline text-shadow-black title">
+            <div class="heading-lg inline text-shadow-black title logo">
                 Pro.js
             </div>
+            <br />
             <br />
             <div class="heading-sml">A highly-configurable, highly-capable, superformant open source JavaScript library.</div>
             <br />
             <div class="heading-sml text-shadow-black">By Jacob Heater</div>
+        </div>
+        <br />
+        <div class="text-center">
+            <a class="github-button" href="https://github.com/jacobheater/pro.js/fork" data-icon="octicon-repo-forked" data-style="mega" data-count-href="/jacobheater/pro.js/network" data-count-api="/repos/jacobheater/pro.js#forks_count" data-count-aria-label="# forks on GitHub" aria-label="Fork jacobheater/pro.js on GitHub">Fork</a>
+            <a class="github-button" href="https://github.com/jacobheater/pro.js" data-icon="octicon-eye" data-style="mega" data-count-href="/jacobheater/pro.js/watchers" data-count-api="/repos/jacobheater/pro.js#subscribers_count" data-count-aria-label="# watchers on GitHub" aria-label="Watch jacobheater/pro.js on GitHub">Watch</a>
+            <a class="github-button" href="https://github.com/jacobheater/pro.js" data-icon="octicon-star" data-style="mega" data-count-href="/jacobheater/pro.js/stargazers" data-count-api="/repos/jacobheater/pro.js#stargazers_count" data-count-aria-label="# stargazers on GitHub" aria-label="Star jacobheater/pro.js on GitHub">Star</a>
+            <a class="github-button" href="https://github.com/jacobheater" data-style="mega" data-count-href="/jacobheater/followers" data-count-api="/users/jacobheater#followers" data-count-aria-label="# followers on GitHub" aria-label="Follow @jacobheater on GitHub">Follow @jacobheater</a>
+            <a class="github-button" href="https://github.com/jacobheater/pro.js/" data-icon="octicon-cloud-download" data-style="mega" aria-label="Download jacobheater/pro.js on GitHub">Code</a>
         </div>
         <br />
         <br />
@@ -285,7 +313,7 @@
                 //Set up the observer event listener
                 pro.observe(target, function (c) {
                     //This will get fired on target state change.
-                    console.log(c);
+                    console.log(c); //c is Array of pro.Observer.ObjectChange
                     for (var i = 0; i < c.length; i++) {
                         var change = c[i];
                         //Look through changes of object for property value
@@ -346,7 +374,7 @@
             //Set up the observer event listener
             pro.observe(target, function (c) {
                 //This will get fired on target state change.
-                console.log(c);
+                console.log(c); //c is Array of pro.Observer.ObjectChange
                 for (var i = 0; i < c.length; i++) {
                     var change = c[i];
                     //Look through changes of object for property value
@@ -359,5 +387,6 @@
             target.value = "Delete the characters from the text input and watch the display update with it.";
         });
     </script>
+    <script async defer id="github-bjs" src="https://buttons.github.io/buttons.js"></script>
 </body>
 </html>
