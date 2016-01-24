@@ -72,7 +72,7 @@
         }
 
         /*Responsive*/
-        @media only screen and (min-device-width : 320px) and (max-device-width : 480px), only screen and (min-width : 321px) {
+        @media only screen and (min-device-width : 320px) and (max-device-width : 480px), only screen and (max-device-width : 740px) {
             #observeOutput {
                 display: block;
                 margin-top: 5px;
@@ -101,7 +101,7 @@
             }
         }
     </style>
-    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <meta name="viewport" content="initial-scale=1.0,user-scalable=no,maximum-scale=1,width=device-width" />
 </head>
 <body>
     <div class="pro-main-content">
@@ -285,7 +285,7 @@
                 //Set up the observer event listener
                 pro.observe(target, function (c) {
                     //This will get fired on target state change.
-                    console.log(c);
+                    console.log(c); //c is Array of pro.Observer.ObjectChange
                     for (var i = 0; i < c.length; i++) {
                         var change = c[i];
                         //Look through changes of object for property value
@@ -346,7 +346,7 @@
             //Set up the observer event listener
             pro.observe(target, function (c) {
                 //This will get fired on target state change.
-                console.log(c);
+                console.log(c); //c is Array of pro.Observer.ObjectChange
                 for (var i = 0; i < c.length; i++) {
                     var change = c[i];
                     //Look through changes of object for property value
