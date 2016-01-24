@@ -2,8 +2,8 @@
 <html>
 <head>
     <title>Pro.js - Jacob Heater</title>
-    <link rel="Stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/0.0.1/prism.css" type="text/css" />
-    <link href='https://fonts.googleapis.com/css?family=Ubuntu' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Ubuntu' rel='stylesheet' type='text/css' />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.1.0/styles/darkula.min.css" rel="stylesheet" type="text/css" />
     <style type="text/css">
         /*Tags*/
         html {
@@ -70,19 +70,49 @@
             border-radius: 10px;
             margin: 5px 0;
         }
+
+        /*Responsive*/
+        @media only screen and (min-device-width : 320px) and (max-device-width : 480px), only screen and (min-width : 321px) {
+            #observeOutput {
+                display: block;
+                margin-top: 5px;
+            }
+            .pro-main-content {
+                width: 90%;
+            }
+
+            .heading-lg {
+                font-size: 2.2em;
+                padding: 6px 3px;
+            }
+
+            .heading-mid {
+                font-size: 1.45em;
+                padding: 4px 1.5px;
+            }
+
+            .heading-sml {
+                font-size: 1.15em;
+                padding: 2px .75px;
+            }
+
+            .title {
+                display: block;
+            }
+        }
     </style>
-	<meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
 </head>
 <body>
     <div class="pro-main-content">
         <div class="text-center">
-            <div class="heading-lg inline text-shadow-black">
+            <div class="heading-lg inline text-shadow-black title">
                 Pro.js
             </div>
             <br />
             <div class="heading-sml">A highly-configurable, highly-capable, superformant open source JavaScript library.</div>
             <br />
-            <div class="heading-sml">By Jacob Heater</div>
+            <div class="heading-sml text-shadow-black">By Jacob Heater</div>
         </div>
         <br />
         <br />
@@ -97,16 +127,16 @@
             </div>
             <br />
             <pre>
-            <code class="language-javascript">
-                    /*Create a Person prototype. The $class() method decorates the prototype with some
-                    characteristics that make it easy to identify Pro.js classes*/
-                    var Person = pro.$class('Person', function(name, age, sex) {
-                        this.name = name || "";
-                        this.age = age || 0;
-                        this.sex = sex || "";
-                    });
-                    var p = new Person("John Doe", 100, "Male");
-                </code>
+            <code>
+            /*Create a Person prototype. The $class() method decorates the prototype with some
+            characteristics that make it easy to identify Pro.js classes*/
+            var Person = pro.$class('Person', function(name, age, sex) {
+                this.name = name || "";
+                this.age = age || 0;
+                this.sex = sex || "";
+            });
+            var p = new Person("John Doe", 100, "Male");
+            </code>
             </pre>
             <br />
             <div class="heading-sml text-shadow-black">
@@ -118,28 +148,28 @@
                 easy to achieve inheritance in your code, and you don't have to sweat the prototypes! Let Pro.js do that!
             </p>
             <pre>
-            <code class="language-javascript">
-                    /*Create a Person prototype. The $class() method decorates the prototype with some
-                    characteristics that make it easy to identify Pro.js classes*/
-                    var Person = pro.$class('Person', function(name, age, sex) {
-                        this.name = name || "";
-                        this.age = age || 0;
-                        this.sex = sex || "";
-                    });
-                    /*Now that we have our Person class defined, let's define a child class that inherits from the
-                    Person super class*/
-                    var Man = pro.$class('Man << Person', function(name, age) {
-                        //Call to the base constructor
-                        this.initializeBase(name, age, 'Male');
-                    }, Person);
-                    var m = new Man("John Doe", 100);
-                    /*Define a Woman class*/
-                    var Woman = pro.$class('Woman << Person', function(name, age) {
-                        //Call to the base constructor
-                        this.initializeBase(name, age, 'Female');
-                    }, Person);
-                    var w = new Woman("Jane Doe", 100);
-                </code>
+            <code>
+            /*Create a Person prototype. The $class() method decorates the prototype with some
+            characteristics that make it easy to identify Pro.js classes*/
+            var Person = pro.$class('Person', function(name, age, sex) {
+                this.name = name || "";
+                this.age = age || 0;
+                this.sex = sex || "";
+            });
+            /*Now that we have our Person class defined, let's define a child class that inherits from the
+            Person super class*/
+            var Man = pro.$class('Man << Person', function(name, age) {
+                //Call to the base constructor
+                this.initializeBase(name, age, 'Male');
+            }, Person);
+            var m = new Man("John Doe", 100);
+            /*Define a Woman class*/
+            var Woman = pro.$class('Woman << Person', function(name, age) {
+                //Call to the base constructor
+                this.initializeBase(name, age, 'Female');
+            }, Person);
+            var w = new Woman("Jane Doe", 100);
+            </code>
             </pre>
             <br />
             <p>
@@ -162,30 +192,30 @@
             </p>
             <br />
             <pre>
-                <code class="language-javascript">
-                    //Numbers
-                    var n = 100;
-                    if (pro.isNumber(n)) {
-                        console.log("It's a number!");
-                    } else {
-                        console.log("It's not a number!");
-                    }
-                    //Functions
-                    var action = () => console.log("Cool beans!");
-                    if (pro.isFunction(action)) {
-                        action();
-                    } else {
-                        console.log("No can do!");
-                    }
-                    //Arrays
-                    var arr = { length: 0 }; //Going to duck type this sucka!
-                    if (pro.isArray(arr)) {
-                        console.log(JSON.stringify(arr));
-                    } else {
-                        console.log("Not an array!");
-                    }
-                    //Too many more examples to count!
-                </code>
+            <code>
+            //Numbers
+            var n = 100;
+            if (pro.isNumber(n)) {
+                console.log("It's a number!");
+            } else {
+                console.log("It's not a number!");
+            }
+            //Functions
+            var action = () => console.log("Cool beans!");
+            if (pro.isFunction(action)) {
+                action();
+            } else {
+                console.log("No can do!");
+            }
+            //Arrays
+            var arr = { length: 0 }; //Going to duck type this sucka!
+            if (pro.isArray(arr)) {
+                console.log(JSON.stringify(arr));
+            } else {
+                console.log("Not an array!");
+            }
+            //Too many more examples to count!
+            </code>
             </pre>
             <br />
             <div class="line-break"></div>
@@ -196,22 +226,22 @@
                 The pro.collections Namespace
             </div>
             <pre>
-                <code class="language-javascript">
-                    //Declare an array.
-                    var array = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-                    //Have the factory create an instance of the pro.collections.enumerable class.
-                    var enumerable = pro.collections.asEnumerable(array);
-                    //Now let's have some fun!
-                    var greaterThan5 = enumerable.where(n => n > 5).toArray(); //[6, 7, 8, 9, 10]
-                    var lessThan5 = enumerable.where(n => n < 5).toArray(); //[4, 3, 2, 1];
-                    var list = enumerable.toList(); //instance of pro.collections.list
-                    list.add(11).add(12).add(13).add(14).add(15);
-                    var greaterThan10 = list.where(n =>  n > 10).toArray(); //[11, 12, 13, 14, 15]
-                    //Examples without the .asEnumerable() factory
-                    var numbers = new pro.collections.list();
-                    //Add a range of numbers to the list
-                    numbers.addRange([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
-                </code>
+            <code>
+            //Declare an array.
+            var array = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+            //Have the factory create an instance of the pro.collections.enumerable class.
+            var enumerable = pro.collections.asEnumerable(array);
+            //Now let's have some fun!
+            var greaterThan5 = enumerable.where(n => n > 5).toArray(); //[6, 7, 8, 9, 10]
+            var lessThan5 = enumerable.where(n => n < 5).toArray(); //[4, 3, 2, 1];
+            var list = enumerable.toList(); //instance of pro.collections.list
+            list.add(11).add(12).add(13).add(14).add(15);
+            var greaterThan10 = list.where(n =>  n > 10).toArray(); //[11, 12, 13, 14, 15]
+            //Examples without the .asEnumerable() factory
+            var numbers = new pro.collections.list();
+            //Add a range of numbers to the list
+            numbers.addRange([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+            </code>
             </pre>
             <p>
                 The collections namespace contains several wrapper classes that utilize native JavaScript array APIs, but
@@ -245,32 +275,32 @@
             <input type="text" id="observeTb" placeholder="Enter some text" style="width: 200px;" />&nbsp;
             <span id="observeOutput"></span>
             <pre>
-                <code class="language-javascript">
-                    //When DOM is ready for manipulation, handle...
-                    pro.document.ready(function() {
-                        //Find the target text box for observing.
-                        var target = pro.document.query('#observeTb').first();
-                        //The placeholder for the textbox text.
-                        var span = pro.document.query('#observeOutput');
-                        //Set up the observer event listener
-                        pro.observe(target, function (c) {
-                            //This will get fired on target state change.
-                            console.log(c);
-                            for (var i = 0; i < c.length; i++) {
-                                var change = c[i];
-                                //Look through changes of object for property value
-                                if (change.propertyName === 'value') {
-                                    //Set the value to the currentValue
-                                    span.text(change.currentValue);
-                                }
-                            }
-                        });
-                    });
-                </code>
+            <code>
+            //When DOM is ready for manipulation, handle...
+            pro.document.ready(function() {
+                //Find the target text box for observing.
+                var target = pro.document.query('#observeTb').first();
+                //The placeholder for the textbox text.
+                var span = pro.document.query('#observeOutput');
+                //Set up the observer event listener
+                pro.observe(target, function (c) {
+                    //This will get fired on target state change.
+                    console.log(c);
+                    for (var i = 0; i < c.length; i++) {
+                        var change = c[i];
+                        //Look through changes of object for property value
+                        if (change.propertyName === 'value') {
+                            //Set the value to the currentValue
+                            span.text(change.currentValue);
+                        }
+                    }
+                });
+            });
+            </code>
             </pre>
         </div>
     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/0.0.1/prism.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.1.0/highlight.min.js"></script>
     <script src="Pro.js"></script>
     <script src="Pro.Collections.js"></script>
     <script src="Pro.Observer.js"></script>
@@ -287,10 +317,30 @@
     <script src="Pro.Runtime.js"></script>
     <script src="Pro.Diagnostics.js"></script>
     <script type="text/javascript">
+        hljs.initHighlightingOnLoad();
         //When DOM is ready for manipulation, handle...
         pro.document.ready(function () {
             //Find the target text box for observing.
             var target = pro.document.query('#observeTb').first();
+            var tabRx = /^\s+/mg;
+            var threshhold = 10;
+            var pres = pro.document.query('pre').forEach(function (i, o) {
+                var $o = pro.document.query(o);
+                var text = $o.text();
+                var lines = text.split(/\n/mg);
+                var enumerable = pro.collections.asEnumerable(lines);
+                enumerable = enumerable.select(function (o) {
+                    var tab = o.match(tabRx)[0];
+                    var char = tab[0];
+                    var len = tab.length > threshhold ? tab.length - threshhold : tab.length;
+                    var sequence = char.repeat(len);
+                    var repl = o.replace(tabRx, sequence);
+                    return repl;
+                });
+                $o.text(enumerable.join('\n'));
+                $o.addClass('javascript');
+                hljs.highlightBlock(o);
+            });
             //The placeholder for the textbox text.
             var span = pro.document.query('#observeOutput');
             //Set up the observer event listener
@@ -306,6 +356,7 @@
                     }
                 }
             });
+            target.value = "Delete the characters from the text input and watch the display update with it.";
         });
     </script>
 </body>
