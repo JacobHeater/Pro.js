@@ -300,7 +300,7 @@
                 calls to achieve asynchronous observing of objects.
             </p>
             <label for="observeTb">Target:</label>&nbsp;
-            <input type="text" id="observeTb" placeholder="Enter some text" style="width: 200px;" />&nbsp;
+            <input type="text" id="observeTb" placeholder="Enter text to see the observer in action!" style="width: 30%;" />&nbsp;
             <span id="observeOutput"></span>
             <pre>
             <code>
@@ -345,6 +345,16 @@
     <script src="Pro.Runtime.js"></script>
     <script src="Pro.Diagnostics.js"></script>
     <script type="text/javascript">
+        if (!String.prototype.repeat) {
+            String.prototype.repeat = function (len) {
+                var out = this;
+                var _len = typeof len === 'number' ? len : 0;
+                for (var i = 0; i < _len; i++) {
+                    out += this;
+                }
+                return out;
+            };
+        }
         hljs.initHighlightingOnLoad();
         //When DOM is ready for manipulation, handle...
         pro.document.ready(function () {
@@ -383,8 +393,7 @@
                         span.text(change.currentValue);
                     }
                 }
-            });
-            target.value = "Delete the characters from the text input and watch the display update with it.";
+            });  
         });
     </script>
     <script async defer id="github-bjs" src="https://buttons.github.io/buttons.js"></script>
