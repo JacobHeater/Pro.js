@@ -21,6 +21,9 @@
             border: 1px solid white;
         }
         /*IDs*/
+		#observeTb {
+			width: 30%;
+		}
         /*Classes*/
         .result {
             font-weight: bold;
@@ -100,6 +103,10 @@
                 display: block;
                 margin-top: 5px;
             }
+			
+			#observeTb {
+				width: 70%;
+			}
 
             .pro-main-content {
                 width: 100%;
@@ -335,7 +342,7 @@
                 calls to achieve asynchronous observing of objects.
             </p>
             <label for="observeTb">Target:</label>&nbsp;
-            <input type="text" id="observeTb" placeholder="Enter text to see the observer in action!" style="width: 30%;" />&nbsp;
+            <input type="text" id="observeTb" placeholder="Enter text to see the observer in action!" />&nbsp;
             <span id="observeOutput"></span>
             <pre>
             <code>
