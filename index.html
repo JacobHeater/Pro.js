@@ -22,10 +22,17 @@
         }
         /*IDs*/
         /*Classes*/
+        .result {
+            font-weight: bold;
+            font-style: italic;
+            font-size: 1em;
+        }
+
         .heading-lg.title.logo {
             color: white;
             text-shadow: 0 0 20px #0094ff;
         }
+
         .pro-main-content {
             width: 70%;
             margin: 0 auto;
@@ -166,6 +173,13 @@
             var p = new Person("John Doe", 100, "Male");
             </code>
             </pre>
+            <div class="result text-shadow-black">
+                <span>Result</span>
+            </div>
+            <pre id="pro-class-person-prototype">
+            <code>
+            </code>
+            </pre>
             <br />
             <div class="heading-sml text-shadow-black">
                 <i>Prototypal Inheritance</i>&nbsp;&nbsp;Got You Down?
@@ -197,6 +211,13 @@
                 this.initializeBase(name, age, 'Female');
             }, Person);
             var w = new Woman("Jane Doe", 100);
+            </code>
+            </pre>
+            <div class="result text-shadow-black">
+                <span>Result</span>
+            </div>
+            <pre id="person-child-class-prototype">
+            <code>
             </code>
             </pre>
             <br />
@@ -245,6 +266,12 @@
             //Too many more examples to count!
             </code>
             </pre>
+            <div class="result text-shadow-black">
+                <span>Result</span>
+            </div>
+            <pre id="type-checking-result">
+            <code></code>
+            </pre>
             <br />
             <div class="line-break"></div>
             <br />
@@ -261,9 +288,13 @@
             var enumerable = pro.collections.asEnumerable(array);
             //Now let's have some fun!
             var greaterThan5 = enumerable.where(n => n > 5).toArray(); //[6, 7, 8, 9, 10]
-            var lessThan5 = enumerable.where(n => n < 5).toArray(); //[4, 3, 2, 1];
+            var lessThan5 = enumerable.where(n => n < 5).toArray(); //[1, 2, 3, 4];
             var list = enumerable.toList(); //instance of pro.collections.list
-            list.add(11).add(12).add(13).add(14).add(15);
+            list.add(11);
+            list.add(12);
+            list.add(13);
+            list.add(14);
+            list.add(15);
             var greaterThan10 = list.where(n =>  n > 10).toArray(); //[11, 12, 13, 14, 15]
             //Examples without the .asEnumerable() factory
             var numbers = new pro.collections.list();
@@ -271,6 +302,10 @@
             numbers.addRange([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
             </code>
             </pre>
+            <div class="result text-shadow-black">
+                <span>Result</span>
+            </div>
+            <pre id="enumerable-result"><code></code></pre>
             <p>
                 The collections namespace contains several wrapper classes that utilize native JavaScript array APIs, but
                 expose methods that are uniform across the classes. This makes it easier to work with Pro.js stacks,
@@ -344,6 +379,122 @@
     <script src="Pro.Serialization.js"></script>
     <script src="Pro.Runtime.js"></script>
     <script src="Pro.Diagnostics.js"></script>
+    <!-- Init Runtime Content -->
+    <script>
+        function stringify(content) {
+            var str = "";
+            var newLine = '\n';
+            if (pro.isObject(content)) {
+                pro.enumerateObject(content, function (key, value) {
+                    if (pro.isObject(value)) {
+                        str += pro.getObjectProperties(value).length > 0 ? pro.stringFormatter('{0}: {{1}{2}}{3}', key, newLine, stringify(value), newLine) : key + ': {}' + newLine;
+                    } else if (pro.isFunction(value)) {
+                        return;
+                    } else {
+                        str += pro.stringFormatter('{0}: {1}{2}', key, value, newLine);
+                    }
+                });
+            } else {
+                str += content + newLine;
+            }
+            return str;
+        }
+        pro.document.ready(function () {
+            var newLine = "\n";
+            /*Begin Person Class Example*/
+            var Person = pro.$class('Person', function (name, age, sex) {
+                this.name = name || "";
+                this.age = age || 0;
+                this.sex = sex || "";
+            });
+            var p = new Person('John Doe', 100, 'Male');
+            pro.document.query('#pro-class-person-prototype').text(stringify(p));
+            /*End Person Class Example*/
+            /*Begin Person Child Class Example*/
+            /*Create a Person prototype. The $class() method decorates the prototype with some
+            characteristics that make it easy to identify Pro.js classes*/
+            var Person = pro.$class('Person', function (name, age, sex) {
+                this.name = name || "";
+                this.age = age || 0;
+                this.sex = sex || "";
+            });
+            /*Now that we have our Person class defined, let's define a child class that inherits from the
+            Person super class*/
+            var Man = pro.$class('Man << Person', function (name, age) {
+                //Call to the base constructor
+                this.initializeBase(name, age, 'Male');
+            }, Person);
+            var m = new Man("John Doe", 100);
+            /*Define a Woman class*/
+            var Woman = pro.$class('Woman << Person', function (name, age) {
+                //Call to the base constructor
+                this.initializeBase(name, age, 'Female');
+            }, Person);
+            var w = new Woman("Jane Doe", 100);
+            var content = "";
+            content += "//Man $class() example" + newLine;
+            content += stringify(m);
+            content += "//Woman $class() example" + newLine;
+            content += stringify(w);
+            pro.document.query('#person-child-class-prototype').text(content);
+            /*End Person Child Class Example*/
+            //Type checking
+            //Numbers
+            var n = 100;
+            var content = "";
+            if (pro.isNumber(n)) {
+                content += "\"It's a number!\"" + newLine;
+            } else {
+                content += "\"It's not a number!\"" + newLine;
+            }
+            //Functions
+            var action = () => content += "\"Cool beans!\"" + newLine;
+            if (pro.isFunction(action)) {
+                action();
+            } else {
+                content += "\"No can do!\"" + newLine;
+            }
+            //Arrays
+            var arr = { length: 0 }; //Going to duck type this sucka!
+            if (pro.isArray(arr)) {
+                content += JSON.stringify(arr) + newLine;
+            } else {
+                content += "\"Not an array!\"" + newLine;
+            }
+            pro.document.query('#type-checking-result').text(content);
+            //Too many more examples to count!
+            //End type checking
+            //Enumerable demo
+            //Declare an array.
+            content = "";
+            var array = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+            content = pro.toJson(array) + ' //The initial array contents' + newLine;
+            //Have the factory create an instance of the pro.collections.enumerable class.
+            var enumerable = pro.collections.asEnumerable(array);
+            //Now let's have some fun!
+            var greaterThan5 = enumerable.where(n => n > 5).toArray(); //[6, 7, 8, 9, 10]
+            content += pro.toJson(greaterThan5) + ' //greaterThan5 using pro.collections.enumerable.prototype.where(n => n > 5)' + newLine;
+            var lessThan5 = enumerable.where(n => n < 5).toArray(); //[4, 3, 2, 1];
+            content += pro.toJson(lessThan5) + ' //lessThan5 using pro.collections.enumerable.prototype.where(n => n < 5)' + newLine;
+            var list = enumerable.toList(); //instance of pro.collections.list
+            list.add(11);
+            list.add(12);
+            list.add(13);
+            list.add(14);
+            list.add(15);
+            var greaterThan10 = list.where(n =>  n > 10).toArray(); //[11, 12, 13, 14, 15]
+            content += pro.toJson(greaterThan10) + ' //greaterThan10 casting enumerable to a list, adding 11, 12, 13, 14, 15 and calling pro.collections.list.prototype.where(n => n > 10)' + newLine;
+            //Examples without the .asEnumerable() factory
+            var numbers = new pro.collections.list();
+            //Add a range of numbers to the list
+            numbers.addRange([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+            content += pro.toJson(numbers.toArray()) + ' //numbers.addRange result using pro.collections.list.prototype.addRange method.';
+            pro.document.query('#enumerable-result').text(content);
+            //End enumerable demo
+        });
+
+    </script>
+    <!-- Init Page-level Elements-->
     <script type="text/javascript">
         if (!String.prototype.repeat) {
             String.prototype.repeat = function (len) {
@@ -368,12 +519,16 @@
                 var lines = text.split(/\n/mg);
                 var enumerable = pro.collections.asEnumerable(lines);
                 enumerable = enumerable.select(function (o) {
-                    var tab = o.match(tabRx)[0];
-                    var char = tab[0];
-                    var len = tab.length > threshhold ? tab.length - threshhold : tab.length;
-                    var sequence = char.repeat(len);
-                    var repl = o.replace(tabRx, sequence);
-                    return repl;
+                    var tabs = o.match(tabRx);
+                    if (tabs !== null) {
+                        var tab = tabs[0];
+                        var char = tab[0];
+                        var len = tab.length > threshhold ? tab.length - threshhold : tab.length;
+                        var sequence = char.repeat(len);
+                        var repl = o.replace(tabRx, sequence);
+                        return repl;
+                    }
+                    return o;
                 });
                 $o.text(enumerable.join('\n'));
                 $o.addClass('javascript');
@@ -393,7 +548,7 @@
                         span.text(change.currentValue);
                     }
                 }
-            });  
+            });
         });
     </script>
     <script async defer id="github-bjs" src="https://buttons.github.io/buttons.js"></script>
