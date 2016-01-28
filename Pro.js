@@ -39,6 +39,12 @@
     isFunction: function(fn) {
       return pro.getType(fn) === pro.types.fn;
     },
+	/*@ Purpose: Indicates if the given object is of type NaN.
+	@ Param: nan -> NaN: The value to check against.
+	@ Returns: Boolean -> Indicates if the value evaluated to NaN.*/
+	isNaN: function(nan) {	
+		return (pro.getType(nan) === pro.types.num && nan*0 !== 0);
+	},
     /*@ Purpose: Indicates if the given object is of type object.
     @ Param: obj -> object: The object to check the type of.
     @ Returns: Boolean -> Indicates if the object is an object or not.*/
@@ -49,7 +55,7 @@
     @ Param: n -> object: The object to check the type of.
     @ Returns: Boolean -> Indicates if the object is a number or not.*/
     isNumber: function(n) {
-      return pro.getType(n) === pro.types.num;
+      return (pro.getType(n) === pro.types.num && n*0 === 0);
     },
     /*@ Purpose: Indicates if the given object is of type boolean.
     @ Param: bool -> object: The object to check the type of.
