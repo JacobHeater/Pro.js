@@ -49,7 +49,7 @@ Version: 2.0
 		@ Param: obj -> object: The object to check the type of.
 		@ Returns: Boolean -> Indicates if the object is an object or not.*/
 		isObject : function (obj) {
-			return pro.getType(obj) === pro.types.obj;
+			return pro.getType(obj) === pro.types.obj && obj !== null;
 		},
 		/*@ Purpose: Indicates if the given object is of type number.
 		@ Param: n -> object: The object to check the type of.
