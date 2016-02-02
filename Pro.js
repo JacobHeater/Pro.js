@@ -81,11 +81,24 @@ Version: 2.0
     @ Returns: Boolean -> Indicates if the object is of type T.*/
     isOfType: function(obj, T) {
       if (pro.isFunction(T)) {
-        return Object.getPrototypeOf(obj) === T.prototype;
+        if (T.prototype.isClass === true && pro.isClass(obj)) {
+          return obj.is(T);
+        } else {
+          var isType = false;
+          var proto = Object.getPrototypeOf(obj);
+          while (proto !== null && isType === false) {
+            if (proto === T.prototype) {
+              isType = true;
+            } else {
+              proto = Object.getPrototypeOf(proto);
+            }
+          }
+          return isType;
+        }
       } else {
         return pro.getType(obj) === pro.getType(T);
       }
-			return false;
+      return false;
     },
     /*@ Purpose: Indicates if the given object is not of type undefined.
     @ Param: obj -> object: The object to check the type of.

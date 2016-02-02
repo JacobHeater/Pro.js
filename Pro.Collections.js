@@ -258,6 +258,12 @@ Version: 2.0
         var n = new pro.collections.list(this.toArray());
         return n;
       };
+      this.toTypedList = function(T) {
+        if (!pro.isFunction(T)) {
+          throw new Error('Argument "T" must be a function to identify the prototype.');
+        }
+        return new pro.collections.typedList(T, this.toArray());
+      };
       this.toDictionary = function(keySelector) {
         var worker = [];
         if (pro.isFunction(keySelector)) {
@@ -702,6 +708,8 @@ Version: 2.0
         throw new Error('Argument "T" is undefined. Please specify the type of the list.');
       } else if (!pro.isFunction(T)) {
         throw new Error('Argument "T" must be a constructor function. Please specify a constructor function to identify the prototype.');
+      } else if (pro.isFunction(T) && !pro.isDefined(T.prototype)) {
+        throw new Error('Argument "T" must be a constructor function. The function provided is not a constructor function.');
       }
       var isTypeValid = function(obj, type) {
         return pro.isOfType(obj, type);
@@ -714,7 +722,7 @@ Version: 2.0
       };
       var invalid = invalidCount(arr) > 0;
       if (invalid === true) {
-        throw new Error('typedList was not intialized with an array containing only type "T" where "T" is ' + T);
+        throw new Error('typedList was not intialized with an array containing only type "T" where "T" is ' + (T.prototype.isClass === true ? new T().getType().name : T.toString().replace(/(function)|[\{\}\(\)\[\]]+|native code/gi, '').trim()));
       }
       var $this = this;
       var type = T;
