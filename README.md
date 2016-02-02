@@ -1,8 +1,11 @@
 <h1>Pro.js</h1>
+
 <hr />
-<h4>An <i>open-source</i> JavaScript library</h4>
-<br />
+
+<h4>An <i>open-source</i> JavaScript library</h4> <br />
+
 <h2>Summary:</h2>
+
 <hr />
 <p>
     Pro.js is a highly configurable, highly optimized JavaScript library that has a clean, easy-to-use API that should feel right at home for developers of all backgrounds.
