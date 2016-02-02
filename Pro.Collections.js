@@ -724,6 +724,10 @@ Version: 2.0
       };
       this.overrides = {
         add: 'add',
+				addRange: 'addRange',
+				remove: 'remove',
+				removeRange: 'removeRange',
+				asEnumerable: 'asEnumerable',
         clear: 'clear'
       };
       this.initializeBase(init);
