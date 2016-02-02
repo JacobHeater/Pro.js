@@ -697,7 +697,7 @@ Version: 2.0
     }
   }));
   pro.collections.extend(pro.object({
-    typedList: pro.$class('pro.collections.typedList << pro.collections.enumerable', function(T, init) {
+    typedList: pro.$class('pro.collections.list<T> << pro.collections.enumerable', function(T, init) {
       if (pro.isUndefined(T)) {
         throw new Error('Argument "T" is undefined. Please specify the type of the list.');
       } else if (!pro.isFunction(T)) {
@@ -724,13 +724,14 @@ Version: 2.0
       };
       this.overrides = {
         add: 'add',
-				addRange: 'addRange',
-				remove: 'remove',
-				removeRange: 'removeRange',
-				asEnumerable: 'asEnumerable',
+        addRange: 'addRange',
+        remove: 'remove',
+        removeRange: 'removeRange',
+        asEnumerable: 'asEnumerable',
         clear: 'clear'
       };
       this.initializeBase(init);
+      this.containedType = T.prototype.isClass === true ? new T().getType() : T.prototype;
       this.asEnumerable = function() {
         return pro.collections.asEnumerable(base);
       };
