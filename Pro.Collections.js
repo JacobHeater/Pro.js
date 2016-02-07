@@ -155,6 +155,7 @@ Version: 2.0
             return pro.collections.asEnumerable(inner);
           });
         };
+		var n = renderEnumerable(groups);
         return settings.output(n);
       };
       this.contains = function(item) {
