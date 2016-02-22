@@ -1,7 +1,5 @@
-
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
-
 <head>
   <title>Pro.js - Jacob Heater</title>
   <link href='https://fonts.googleapis.com/css?family=Ubuntu' rel='stylesheet' type='text/css' />
@@ -13,6 +11,12 @@
       font-family: 'Ubuntu', Arial, Calibri, sans-serif;
       background-color: #757575;
       color: white;
+    }
+
+    input[type="text"],
+    input[type="button"],
+    textarea {
+      font-family: 'Ubuntu', Arial, Calibri, sans-serif;
     }
 
     html,
@@ -94,6 +98,11 @@
       border-radius: 10px;
       margin: 5px 0;
     }
+
+    .sandbox textarea {
+      width: 100%;
+      height: 300px;
+    }
     /*Responsive*/
 
     @media only screen and (min-device-width: 320px) and (max-device-width: 480px),
@@ -132,6 +141,9 @@
       .title {
         display: block;
       }
+      .sandbox textarea {
+        height: 150px;
+      }
     }
   </style>
   <meta name="viewport" content="initial-scale=1.0,user-scalable=no,maximum-scale=1,width=device-width" />
@@ -152,11 +164,11 @@
     <br />
     <div class="text-center">
       <a class="github-button" href="https://github.com/jacobheater/pro.js/fork" data-icon="octicon-repo-forked" data-style="mega" data-count-href="/jacobheater/pro.js/network" data-count-api="/repos/jacobheater/pro.js#forks_count" data-count-aria-label="# forks on GitHub"
-      aria-label="Fork jacobheater/pro.js on GitHub">Fork</a>
+        aria-label="Fork jacobheater/pro.js on GitHub">Fork</a>
       <a class="github-button" href="https://github.com/jacobheater/pro.js" data-icon="octicon-eye" data-style="mega" data-count-href="/jacobheater/pro.js/watchers" data-count-api="/repos/jacobheater/pro.js#subscribers_count" data-count-aria-label="# watchers on GitHub"
-      aria-label="Watch jacobheater/pro.js on GitHub">Watch</a>
+        aria-label="Watch jacobheater/pro.js on GitHub">Watch</a>
       <a class="github-button" href="https://github.com/jacobheater/pro.js" data-icon="octicon-star" data-style="mega" data-count-href="/jacobheater/pro.js/stargazers" data-count-api="/repos/jacobheater/pro.js#stargazers_count" data-count-aria-label="# stargazers on GitHub"
-      aria-label="Star jacobheater/pro.js on GitHub">Star</a>
+        aria-label="Star jacobheater/pro.js on GitHub">Star</a>
       <a class="github-button" href="https://github.com/jacobheater" data-style="mega" data-count-href="/jacobheater/followers" data-count-api="/users/jacobheater#followers" data-count-aria-label="# followers on GitHub" aria-label="Follow @jacobheater on GitHub">Follow @jacobheater</a>
       <a class="github-button" href="https://github.com/jacobheater/pro.js/" data-icon="octicon-cloud-download" data-style="mega" aria-label="Download jacobheater/pro.js on GitHub">Code</a>
     </div>
@@ -364,195 +376,181 @@
     </div>
   </div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.1.0/highlight.min.js"></script>
-  <script src="Pro.js"></script>
-  <script src="Pro.Collections.js"></script>
-  <script src="Pro.Observer.js"></script>
-  <script src="Pro.Encoding.js"></script>
-  <script src="Pro.Cryptography.js"></script>
-  <script src="Pro.XML.js"></script>
-  <script src="Pro.Entities.js"></script>
-  <script src="Pro.UnitTest.js"></script>
-  <script src="Pro.Document.js"></script>
-  <script src="Pro.Duos.js"></script>
-  <script src="Pro.Web.Client.State.js"></script>
-  <script src="Pro.Angular.js"></script>
-  <script src="Pro.Serialization.js"></script>
-  <script src="Pro.Runtime.js"></script>
-  <script src="Pro.Diagnostics.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.22/require.min.js"></script>
   <!-- Init Runtime Content -->
   <script>
-    function stringify(content) {
-      var str = "";
-      var newLine = '\n';
-      if (pro.isObject(content)) {
-        pro.enumerateObject(content, function(key, value) {
-          if (pro.isObject(value)) {
-            str += pro.getObjectProperties(value).length > 0 ? pro.stringFormatter('{0}: {{1}{2}}{3}', key, newLine, stringify(value), newLine) : key + ': {}' + newLine;
-          } else if (pro.isFunction(value)) {
-            return;
-          } else {
-            str += pro.stringFormatter('{0}: {1}{2}', key, value, newLine);
+    require(['pro', 'pro.collections', 'pro.document', 'pro.observer'], function(pro) {
+      function stringify(content) {
+        var str = "";
+        var newLine = '\n';
+        if (pro.isObject(content)) {
+          pro.enumerateObject(content, function(key, value) {
+            if (pro.isObject(value)) {
+              str += pro.getObjectProperties(value).length > 0 ? pro.stringFormatter('{0}: {{1}{2}}{3}', key, newLine, stringify(value), newLine) : key + ': {}' + newLine;
+            } else if (pro.isFunction(value)) {
+              return;
+            } else {
+              str += pro.stringFormatter('{0}: {1}{2}', key, value, newLine);
+            }
+          });
+        } else {
+          str += content + newLine;
+        }
+        return str;
+      }
+      pro.document.ready(function() {
+        var newLine = "\n";
+        /*Begin Person Class Example*/
+        var Person = pro.$class('Person', function(name, age, sex) {
+          this.name = name || "";
+          this.age = age || 0;
+          this.sex = sex || "";
+        });
+        var p = new Person('John Doe', 100, 'Male');
+        pro.document.query('#pro-class-person-prototype').text(stringify(p));
+        /*End Person Class Example*/
+        /*Begin Person Child Class Example*/
+        /*Create a Person prototype. The $class() method decorates the prototype with some
+        characteristics that make it easy to identify Pro.js classes*/
+        var Person = pro.$class('Person', function(name, age, sex) {
+          this.name = name || "";
+          this.age = age || 0;
+          this.sex = sex || "";
+        });
+        /*Now that we have our Person class defined, let's define a child class that inherits from the
+        Person super class*/
+        var Man = pro.$class('Man << Person', function(name, age) {
+          //Call to the base constructor
+          this.initializeBase(name, age, 'Male');
+        }, Person);
+        var m = new Man("John Doe", 100);
+        /*Define a Woman class*/
+        var Woman = pro.$class('Woman << Person', function(name, age) {
+          //Call to the base constructor
+          this.initializeBase(name, age, 'Female');
+        }, Person);
+        var w = new Woman("Jane Doe", 100);
+        var content = "";
+        content += "//Man $class() example" + newLine;
+        content += stringify(m);
+        content += "//Woman $class() example" + newLine;
+        content += stringify(w);
+        pro.document.query('#person-child-class-prototype').text(content);
+        /*End Person Child Class Example*/
+        //Type checking
+        //Numbers
+        var n = 100;
+        var content = "";
+        if (pro.isNumber(n)) {
+          content += "\"It's a number!\"" + newLine;
+        } else {
+          content += "\"It's not a number!\"" + newLine;
+        }
+        //Functions
+        var action = () => content += "\"Cool beans!\"" + newLine;
+        if (pro.isFunction(action)) {
+          action();
+        } else {
+          content += "\"No can do!\"" + newLine;
+        }
+        //Arrays
+        var arr = {
+          length: 0
+        }; //Going to duck type this sucka!
+        if (pro.isArray(arr)) {
+          content += JSON.stringify(arr) + newLine;
+        } else {
+          content += "\"Not an array!\"" + newLine;
+        }
+        pro.document.query('#type-checking-result').text(content);
+        //Too many more examples to count!
+        //End type checking
+        //Enumerable demo
+        //Declare an array.
+        content = "";
+        var array = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+        content = pro.toJson(array) + ' //The initial array contents' + newLine;
+        //Have the factory create an instance of the pro.collections.enumerable class.
+        var enumerable = pro.collections.asEnumerable(array);
+        //Now let's have some fun!
+        var greaterThan5 = enumerable.where(n => n > 5).toArray(); //[6, 7, 8, 9, 10]
+        content += pro.toJson(greaterThan5) + ' //greaterThan5 using pro.collections.enumerable.prototype.where(n => n > 5)' + newLine;
+        var lessThan5 = enumerable.where(n => n < 5).toArray(); //[4, 3, 2, 1];
+        content += pro.toJson(lessThan5) + ' //lessThan5 using pro.collections.enumerable.prototype.where(n => n < 5)' + newLine;
+        var list = enumerable.toList(); //instance of pro.collections.list
+        list.add(11);
+        list.add(12);
+        list.add(13);
+        list.add(14);
+        list.add(15);
+        var greaterThan10 = list.where(n => n > 10).toArray(); //[11, 12, 13, 14, 15]
+        content += pro.toJson(greaterThan10) + ' //greaterThan10 casting enumerable to a list, adding 11, 12, 13, 14, 15 and calling pro.collections.list.prototype.where(n => n > 10)' + newLine;
+        //Examples without the .asEnumerable() factory
+        var numbers = new pro.collections.list();
+        //Add a range of numbers to the list
+        numbers.addRange([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+        content += pro.toJson(numbers.toArray()) + ' //numbers.addRange result using pro.collections.list.prototype.addRange method.';
+        pro.document.query('#enumerable-result').text(content);
+        //End enumerable demo
+      });
+      //Page level aspects
+      if (!String.prototype.repeat) {
+        String.prototype.repeat = function(len) {
+          var out = this;
+          var _len = typeof len === 'number' ? len : 0;
+          for (var i = 0; i < _len; i++) {
+            out += this;
+          }
+          return out;
+        };
+      }
+      hljs.initHighlightingOnLoad();
+      pro.document.ready(function() {
+        //Find the target text box for observing.
+        var target = pro.document.query('#observeTb').first();
+        var tabRx = /^\s+/mg;
+        var threshhold = 10;
+        var pres = pro.document.query('pre').forEach(function(i, o) {
+          var $o = pro.document.query(o);
+          var text = $o.text();
+          var lines = text.split(/\n/mg);
+          var enumerable = pro.collections.asEnumerable(lines);
+          enumerable = enumerable.select(function(o) {
+            var tabs = o.match(tabRx);
+            if (tabs !== null) {
+              var tab = tabs[0];
+              var char = tab[0];
+              var len = tab.length > threshhold ? tab.length - threshhold : tab.length;
+              var sequence = char.repeat(len);
+              var repl = o.replace(tabRx, sequence);
+              return repl;
+            }
+            return o;
+          });
+          $o.text(enumerable.join('\n'));
+          $o.addClass('javascript');
+          hljs.highlightBlock(o);
+        });
+        //The placeholder for the textbox text.
+        var span = pro.document.query('#observeOutput');
+        //Set up the observer event listener
+        pro.observe(target, function(c) {
+          //This will get fired on target state change.
+          console.log({
+            logArgs: [c]
+          }); //c is Array of pro.Observer.ObjectChange
+          for (var i = 0; i < c.length; i++) {
+            var change = c[i];
+            //Look through changes of object for property value
+            if (change.propertyName === 'value') {
+              //Set the value to the currentValue
+              span.text(change.currentValue);
+            }
           }
         });
-      } else {
-        str += content + newLine;
-      }
-      return str;
-    }
-    pro.document.ready(function() {
-      var newLine = "\n";
-      /*Begin Person Class Example*/
-      var Person = pro.$class('Person', function(name, age, sex) {
-        this.name = name || "";
-        this.age = age || 0;
-        this.sex = sex || "";
-      });
-      var p = new Person('John Doe', 100, 'Male');
-      pro.document.query('#pro-class-person-prototype').text(stringify(p));
-      /*End Person Class Example*/
-      /*Begin Person Child Class Example*/
-      /*Create a Person prototype. The $class() method decorates the prototype with some
-      characteristics that make it easy to identify Pro.js classes*/
-      var Person = pro.$class('Person', function(name, age, sex) {
-        this.name = name || "";
-        this.age = age || 0;
-        this.sex = sex || "";
-      });
-      /*Now that we have our Person class defined, let's define a child class that inherits from the
-      Person super class*/
-      var Man = pro.$class('Man << Person', function(name, age) {
-        //Call to the base constructor
-        this.initializeBase(name, age, 'Male');
-      }, Person);
-      var m = new Man("John Doe", 100);
-      /*Define a Woman class*/
-      var Woman = pro.$class('Woman << Person', function(name, age) {
-        //Call to the base constructor
-        this.initializeBase(name, age, 'Female');
-      }, Person);
-      var w = new Woman("Jane Doe", 100);
-      var content = "";
-      content += "//Man $class() example" + newLine;
-      content += stringify(m);
-      content += "//Woman $class() example" + newLine;
-      content += stringify(w);
-      pro.document.query('#person-child-class-prototype').text(content);
-      /*End Person Child Class Example*/
-      //Type checking
-      //Numbers
-      var n = 100;
-      var content = "";
-      if (pro.isNumber(n)) {
-        content += "\"It's a number!\"" + newLine;
-      } else {
-        content += "\"It's not a number!\"" + newLine;
-      }
-      //Functions
-      var action = () => content += "\"Cool beans!\"" + newLine;
-      if (pro.isFunction(action)) {
-        action();
-      } else {
-        content += "\"No can do!\"" + newLine;
-      }
-      //Arrays
-      var arr = {
-        length: 0
-      }; //Going to duck type this sucka!
-      if (pro.isArray(arr)) {
-        content += JSON.stringify(arr) + newLine;
-      } else {
-        content += "\"Not an array!\"" + newLine;
-      }
-      pro.document.query('#type-checking-result').text(content);
-      //Too many more examples to count!
-      //End type checking
-      //Enumerable demo
-      //Declare an array.
-      content = "";
-      var array = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-      content = pro.toJson(array) + ' //The initial array contents' + newLine;
-      //Have the factory create an instance of the pro.collections.enumerable class.
-      var enumerable = pro.collections.asEnumerable(array);
-      //Now let's have some fun!
-      var greaterThan5 = enumerable.where(n => n > 5).toArray(); //[6, 7, 8, 9, 10]
-      content += pro.toJson(greaterThan5) + ' //greaterThan5 using pro.collections.enumerable.prototype.where(n => n > 5)' + newLine;
-      var lessThan5 = enumerable.where(n => n < 5).toArray(); //[4, 3, 2, 1];
-      content += pro.toJson(lessThan5) + ' //lessThan5 using pro.collections.enumerable.prototype.where(n => n < 5)' + newLine;
-      var list = enumerable.toList(); //instance of pro.collections.list
-      list.add(11);
-      list.add(12);
-      list.add(13);
-      list.add(14);
-      list.add(15);
-      var greaterThan10 = list.where(n => n > 10).toArray(); //[11, 12, 13, 14, 15]
-      content += pro.toJson(greaterThan10) + ' //greaterThan10 casting enumerable to a list, adding 11, 12, 13, 14, 15 and calling pro.collections.list.prototype.where(n => n > 10)' + newLine;
-      //Examples without the .asEnumerable() factory
-      var numbers = new pro.collections.list();
-      //Add a range of numbers to the list
-      numbers.addRange([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
-      content += pro.toJson(numbers.toArray()) + ' //numbers.addRange result using pro.collections.list.prototype.addRange method.';
-      pro.document.query('#enumerable-result').text(content);
-      //End enumerable demo
-    });
-  </script>
-  <!-- Init Page-level Elements-->
-  <script type="text/javascript">
-    if (!String.prototype.repeat) {
-      String.prototype.repeat = function(len) {
-        var out = this;
-        var _len = typeof len === 'number' ? len : 0;
-        for (var i = 0; i < _len; i++) {
-          out += this;
-        }
-        return out;
-      };
-    }
-    hljs.initHighlightingOnLoad();
-    //When DOM is ready for manipulation, handle...
-    pro.document.ready(function() {
-      //Find the target text box for observing.
-      var target = pro.document.query('#observeTb').first();
-      var tabRx = /^\s+/mg;
-      var threshhold = 10;
-      var pres = pro.document.query('pre').forEach(function(i, o) {
-        var $o = pro.document.query(o);
-        var text = $o.text();
-        var lines = text.split(/\n/mg);
-        var enumerable = pro.collections.asEnumerable(lines);
-        enumerable = enumerable.select(function(o) {
-          var tabs = o.match(tabRx);
-          if (tabs !== null) {
-            var tab = tabs[0];
-            var char = tab[0];
-            var len = tab.length > threshhold ? tab.length - threshhold : tab.length;
-            var sequence = char.repeat(len);
-            var repl = o.replace(tabRx, sequence);
-            return repl;
-          }
-          return o;
-        });
-        $o.text(enumerable.join('\n'));
-        $o.addClass('javascript');
-        hljs.highlightBlock(o);
-      });
-      //The placeholder for the textbox text.
-      var span = pro.document.query('#observeOutput');
-      //Set up the observer event listener
-      pro.observe(target, function(c) {
-        //This will get fired on target state change.
-        console.log(c); //c is Array of pro.Observer.ObjectChange
-        for (var i = 0; i < c.length; i++) {
-          var change = c[i];
-          //Look through changes of object for property value
-          if (change.propertyName === 'value') {
-            //Set the value to the currentValue
-            span.text(change.currentValue);
-          }
-        }
       });
     });
   </script>
   <script async defer id="github-bjs" src="https://buttons.github.io/buttons.js"></script>
 </body>
-
 </html>
