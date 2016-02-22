@@ -15,7 +15,7 @@ Version: 2.0
  *****************************************************************************
  *****************************************************************************
  *****************************************************************************/
-(function(global, undefined) {
+define('pro', function(){
   "use strict";
   var pro = {
     /*@ Purpose: A hashtable that maps all of the JavaScript types to their string values */
@@ -1554,7 +1554,5 @@ Version: 2.0
   pro.plainObject.prototype.asJson = function() {
     return pro.toJson(this);
   };
-  //Expose pro to the global object.
-  //xo is shorthand for accessing pro.
-  global.pro = global.xo = pro;
-})(this, undefined);
+  return pro;
+});
