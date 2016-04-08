@@ -100,7 +100,9 @@ Questions/Comments: jacobheater@gmail.com
         }
         return html;
     };
+    var isReady = false;
     var readyHandlers = new pro.collections.list();
+    var completeHandlers = new pro.collections.list();
     /*@ Purpose: Exposes an API for DOM related functionality.
 	@ Namespace: pro.document */
     pro.module('document', pro.object({
@@ -110,6 +112,7 @@ Questions/Comments: jacobheater@gmail.com
         @ Returns: void.*/
         ready: function (readyHandler) {
             var isReadyHandlerValid = pro.isFunction(readyHandler);
+            isReady = true;
             if (!readyHandlers.contains(readyHandler) && isReadyHandlerValid) {
                 readyHandlers.add(readyHandler);
             }
@@ -132,6 +135,9 @@ Questions/Comments: jacobheater@gmail.com
                                 });
                                 readyHandlers.fired = true;
                             }
+                            completeHandlers.forEach(function (i, o) {
+                                o.call(this, e);
+                            });
                             break;
                         default:
                             break;
@@ -142,13 +148,33 @@ Questions/Comments: jacobheater@gmail.com
                     if (isReadyHandlerValid) {
                         readyHandler.call(pro.document, document, e);
                     }
+                    if (document.readyState === 'complete') {
+                        completeHandlers.forEach(function (i, o) {
+                            o.call(this, e);
+                        });
+                    }
                 });
             } else {
                 window.onload = function (e) {
                     readyHandlers.forEach(function (i, o) {
                         o.call(this, e);
                     });
+                    completeHandlers.forEach(function (i, o) {
+                        o.call(this, e);
+                    });
                 };
+            }
+        },
+        isLoaded: function() {
+            return document.readyState === 'complete';
+        },
+        complete: function (completeHandler) {
+            var isCompleteHandlerValid = pro.isFunction(completeHandler);
+            if (!completeHandlers.contains(completeHandler) && isCompleteHandlerValid) {
+                completeHandlers.add(completeHandler);
+            }
+            if (!isReady) {
+                pro.document.ready(function () { });
             }
         },
         queryResult: pro.$class('pro.document.queryResult', function (array, context) {
