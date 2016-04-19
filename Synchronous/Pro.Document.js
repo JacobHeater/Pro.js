@@ -100,9 +100,11 @@ Questions/Comments: jacobheater@gmail.com
         }
         return html;
     };
+    var dataContainer = {};
     var isReady = false;
     var readyHandlers = new pro.collections.list();
     var completeHandlers = new pro.collections.list();
+    var isLoaded = false;
     /*@ Purpose: Exposes an API for DOM related functionality.
 	@ Namespace: pro.document */
     pro.module('document', pro.object({
@@ -138,6 +140,7 @@ Questions/Comments: jacobheater@gmail.com
                             completeHandlers.forEach(function (i, o) {
                                 o.call(this, e);
                             });
+                            isLoaded = true;
                             break;
                         default:
                             break;
@@ -152,6 +155,7 @@ Questions/Comments: jacobheater@gmail.com
                         completeHandlers.forEach(function (i, o) {
                             o.call(this, e);
                         });
+                        isLoaded = true;
                     }
                 });
             } else {
@@ -162,11 +166,12 @@ Questions/Comments: jacobheater@gmail.com
                     completeHandlers.forEach(function (i, o) {
                         o.call(this, e);
                     });
+                    isLoaded = true;
                 };
             }
         },
-        isLoaded: function() {
-            return document.readyState === 'complete';
+        isLoaded: function () {
+            return isLoaded;
         },
         complete: function (completeHandler) {
             var isCompleteHandlerValid = pro.isFunction(completeHandler);
@@ -203,10 +208,32 @@ Questions/Comments: jacobheater@gmail.com
             $this.length = this.count();
             $this.context = context || document;
             pro.$for(array, function (i, o) {
+                if (!o.__uuid__) {
+                    o.__uuid__ = pro.GUID.create();
+                }
                 $this[i] = o;
             });
+            this.data = function (key, value) {
+                if (pro.isString(key) && pro.isDefined(value)) {
+                    this.forEach(function (i, o) {
+                        if (!dataContainer[o.__uuid__]) {
+                            dataContainer[o.__uuid__] = {};
+                        }
+                        dataContainer[o.__uuid__][key] = value;
+                    });
+                    return this;
+                } else {
+                    return this.first() !== undefined ? dataContainer[this.first().__uuid__] ? dataContainer[this.first().__uuid__][key] : undefined : undefined;
+                }
+            };
             return $this;
         }, pro.collections.enumerable),
+        events: {
+            domChange: {
+                domAppend: new pro.events.event('domAppend'),
+                domRemove: new pro.events.event('domRemove')
+            }
+        },
         query: function (selector, context) {
             var ctxt = context || document;
             if (ctxt) {
@@ -485,6 +512,14 @@ Questions/Comments: jacobheater@gmail.com
     var queryResult = function (collection) {
         return new pro.document.queryResult(pro.isArray(collection) || pro.isReadOnlyArray(collection) ? collection : [collection]);
     };
+    var events = {
+        change: {
+            event: new CustomEvent('change'),
+            dispatch: function (element) {
+                element.dispatchEvent(this.event);
+            }
+        }
+    };
     var domEvent = pro.$class('pro.document.DOMEvent', function (name, handler) {
         this.name = name;
         this.handler = handler;
@@ -498,24 +533,33 @@ Questions/Comments: jacobheater@gmail.com
             var exoElem = this;
             if (pro.isString(event) && event.trim() !== "" && pro.isFunction(handler)) {
                 event = event.trim();
-                var prefix = event.substring(0, 2);
-                if (prefix !== "on") {
-                    event = "on" + event;
+                var events = event.split(' ');
+                var $events;
+                if (events.length > 1) {
+                    $events = pro.collections.asEnumerable(events);
+                } else {
+                    $events = pro.collections.asEnumerable([event]);
                 }
-                var _event = new domEvent(event, handler);
-                this.forEach(function (i, e) {
-                    if (!e.proEventCache || !(e.proEventCache && pro.isClass(e.proEventCache) && e.proEventCache.is(pro.collections.dictionary))) {
-                        e.proEventCache = new pro.collections.dictionary();
+                $events.forEach(function (i, event) {
+                    var prefix = event.substring(0, 2);
+                    if (prefix !== "on") {
+                        event = "on" + event;
                     }
-                    e.proEventCache.add(_event.key, _event);
-                    if (!e[_event.name]) {
-                        e[_event.name] = function (eventArgs) {
-                            var domElem = this;
-                            this.proEventCache.forEach(function (i, de) {
-                                de.value.handler.call(domElem, eventArgs, domElem, pro.document.query(domElem));
-                            });
-                        };
-                    }
+                    var _event = new domEvent(event, handler);
+                    exoElem.forEach(function (i, e) {
+                        if (!e.proEventCache || !(e.proEventCache && pro.isClass(e.proEventCache) && e.proEventCache.is(pro.collections.dictionary))) {
+                            e.proEventCache = new pro.collections.dictionary();
+                        }
+                        e.proEventCache.add(_event.key, _event);
+                        if (!e[_event.name]) {
+                            e[_event.name] = function (eventArgs) {
+                                var domElem = this;
+                                this.proEventCache.forEach(function (i, de) {
+                                    de.value.handler.call(domElem, eventArgs, domElem, pro.document.query(domElem));
+                                });
+                            };
+                        }
+                    });
                 });
             }
             return this;
@@ -574,6 +618,9 @@ Questions/Comments: jacobheater@gmail.com
             }
             return this;
         },
+        outerHtml: function () {
+            return this.first() !== undefined ? this.first().outerHTML : "";
+        },
         text: function (text, appendPrepend) {
             var _text = null;
             if (pro.isDefined(text)) {
@@ -589,6 +636,7 @@ Questions/Comments: jacobheater@gmail.com
                 if (pro.isString(_text)) {
                     this.forEach(function (i, o) {
                         o.innerText = appendPrepend === 1 ? o.innerText + _text : appendPrepend === 2 ? _text + o.innerText : text;
+                        events.change.dispatch(o);
                     });
                 }
             } else {
@@ -603,6 +651,7 @@ Questions/Comments: jacobheater@gmail.com
             return this.forEach(function (i, o) {
                 if (pro.isDefined(o.value)) {
                     o.value = value.toString();
+                    events.change.dispatch(o);
                 }
             });
         },
@@ -619,6 +668,17 @@ Questions/Comments: jacobheater@gmail.com
                         e.appendChild(element);
                     });
                 }
+            }
+            pro.document.events.domChange.domAppend.fire(new pro.events.eventArguments(pro.document.events.domChange.domAppend, {
+                document: document,
+                $document: pro.document,
+                appendedElement: element
+            }));
+            return this;
+        },
+        get: function (index) {
+            if (pro.isNumber(index)) {
+                return pro.document.query(this.atIndex(index));
             }
             return this;
         },
@@ -733,9 +793,16 @@ Questions/Comments: jacobheater@gmail.com
             return this.attr(name) !== "";
         },
         dispose: function () {
+            var removed = new pro.collections.list();
             this.forEach(function (i, e) {
+                removed.add(e);
                 e.remove();
             });
+            pro.document.events.domChange.domRemove.fire(new pro.events.eventArguments(pro.document.events.domChange.domRemove, {
+                document: document,
+                $document: pro.document,
+                removedElements: removed.toArray()
+            }));
             return this;
         },
         classList: function () {

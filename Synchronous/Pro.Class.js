@@ -24,6 +24,9 @@ made easy.
     var isClass = function (obj) {
         return isObject(obj) && obj.isClass === true;
     };
+    var isArray = function (arr) {
+        return arr && arr.length && arr.slice && arr.pop && arr.push;
+    };
     var enumerateObject = function (obj, callback) {
         for (var key in obj) {
             callback(key, obj[key]);
@@ -44,6 +47,20 @@ made easy.
             this.nativeType = nativeType || null;
             return this;
         },
+        /*@ Purpose: A helper function that allows the .apply() method to be invoked on a constructor function.
+        @ Param: constructor: -> function: The constructor function to invoke the .apply() method on.
+        @ Param: args: -> Array: The arguments array to pass into the constructor.
+        @ Returns: Object -> The intialized prototype instance. */
+        applyConstructor: function(constructor, args) {
+            if (isArray(args) && isFunction(constructor)) {
+                var ctor = function () {
+                    return constructor.apply(pro, args);
+                };
+                ctor.prototype = constructor.prototype;
+                return new ctor();
+            }
+            return undefined;
+        },
         /*@ Purpose: Encapsulates prototypical inheritance into a decorator function that adds many type checking features.
 		@ Param: type -> string: The name of the class or type.
 		@ Param: constructor -> function: Serves as the constructor when the new keyword is used.
@@ -56,13 +73,8 @@ made easy.
                 constructor.$class = true;
                 if (isFunction(base)) {
                     constructor.prototype.base = null;
-
                     function construct(constructor, args) {
-                        var base = function () {
-                            return constructor.apply(this, args);
-                        };
-                        base.prototype = constructor.prototype;
-                        return new base();
+                        return $this.applyConstructor(constructor, args);
                     }
                     constructor.prototype.initializeBase = function (params) {
                         var $this = this;
@@ -107,6 +119,9 @@ made easy.
                         }
                     }
                     return _type;
+                };
+                constructor.prototype.in = function (propertyName) {
+                    return pro.isDefined(this[propertyName]);
                 };
                 constructor.prototype.isClass = true;
                 constructor.prototype.asJson = function () {

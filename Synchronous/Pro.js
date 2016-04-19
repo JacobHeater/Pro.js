@@ -411,6 +411,20 @@ Version: 2.0
             }
             return value;
         },
+        /*@ Purpose: A helper function that allows the .apply() method to be invoked on a constructor function.
+        @ Param: constructor: -> function: The constructor function to invoke the .apply() method on.
+        @ Param: args: -> Array: The arguments array to pass into the constructor.
+        @ Returns: Object -> The intialized prototype instance. */
+        applyConstructor: function (constructor, args) {
+            if (pro.isArray(args) && pro.isFunction(constructor)) {
+                var ctor = function () {
+                    return constructor.apply(this, args);
+                };
+                ctor.prototype = constructor.prototype;
+                return new ctor();
+            }
+            return undefined;
+        },
         /*@ Purpose: Encapsulates prototypical inheritance into a decorator function that adds many type checking features.
 		@ Param: type -> string: The name of the class or type.
 		@ Param: constructor -> function: Serves as the constructor when the new keyword is used.
@@ -1545,6 +1559,40 @@ Version: 2.0
             if (disposable.isClass === true && disposable.is(pro.disposable)) {
                 action.call(this, disposable);
                 disposable.Dispose();
+            }
+        }
+    });
+    pro.extend({
+        /*@ Purpose: Provides a uniform way of recursively calling a function with each recurisve call being done asynchronously.
+        @ Param: action -> function: The action to be performed recursively.
+        @ Notes: {
+            action: function -> If recursion is to be cancled, the function should return false.
+        }
+        @ Returns: void*/
+        recurseAsync: function (action) {
+            if (pro.isFunction(action)) {
+                var recurse;
+                var $continue;
+                if (requestAnimationFrame) {
+                    recurse = function () {
+                        requestAnimationFrame(function () {
+                            $continue = action();
+                            if ($continue !== false) {
+                                recurse();
+                            }
+                        });
+                    };
+                } else {
+                    recurse = function () {
+                        setTimeout(function () {
+                            $continue = action();
+                            if ($continue !== false) {
+                                recurse();
+                            }
+                        }, 0);
+                    };
+                }
+                recurse();
             }
         }
     });

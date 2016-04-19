@@ -26,6 +26,9 @@ Version: 2.0
         this.property = pro.isString(property) ? property : null;
         this.object = obj || {};
         this.hashTable = pro.getHashTable(this.object);
+        this.unobserve = function () {
+
+        };
     });
     var ObjectChange = pro.$class('pro.Observer.ObjectChange', function (type, propertyName, originalValue, currentValue, obj) {
         this.type = type;
@@ -166,7 +169,10 @@ Version: 2.0
                 observerSubject.observing = true;
                 observerSubject.observe();
             }
-            return obj;
+            return {
+                observer: observer,
+                object: obj
+            };
         },
         /*@ Purpose: Removes all observers of the given object from the subject, given that the object has observers attached to it.
         @ Param: obj -> object: The object to detach observers from. */
