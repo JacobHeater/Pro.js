@@ -416,14 +416,13 @@ Version: 2.0
         @ Param: args: -> Array: The arguments array to pass into the constructor.
         @ Returns: Object -> The intialized prototype instance. */
         applyConstructor: function (constructor, args) {
-            if (pro.isArray(args) && pro.isFunction(constructor)) {
+            if (pro.isFunction(constructor)) {
                 var ctor = function () {
                     return constructor.apply(this, args);
                 };
                 ctor.prototype = constructor.prototype;
                 return new ctor();
             }
-            return undefined;
         },
         /*@ Purpose: Encapsulates prototypical inheritance into a decorator function that adds many type checking features.
 		@ Param: type -> string: The name of the class or type.
@@ -437,14 +436,11 @@ Version: 2.0
                 constructor.$class = true;
                 if (pro.isFunction(base)) {
                     constructor.prototype.base = null;
-
                     function construct(constructor, args) {
-                        var base = function () {
-                            return constructor.apply(this, args);
-                        };
-                        base.prototype = constructor.prototype;
-                        return new base();
+                        return pro.applyConstructor(constructor, args);
                     }
+                    constructor.prototype = construct(base, []);
+                    constructor.prototype.constructor = constructor;
                     constructor.prototype.initializeBase = function (params) {
                         var $this = this;
                         $this.base = construct(base, arguments);
@@ -459,9 +455,9 @@ Version: 2.0
                                 }
                             }
                         });
-                        $this.toString = $this.base.toString || $this.toString;
-                        $this.valueOf = $this.base.valueOf || $this.valueOf;
-                        $this.toLocaleString = $this.base.toLocaleString || $this.toLocaleString;
+                        $this.toString = $this.base ? $this.base.toString : $this.toString;
+                        $this.valueOf = $this.base ? $this.base.valueOf : $this.valueOf;
+                        $this.toLocaleString = $this.base ? $this.base.toLocaleString : $this.toLocaleString;
                     };
                 }
                 constructor.static = function (members) {

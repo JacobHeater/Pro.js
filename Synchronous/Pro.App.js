@@ -212,7 +212,7 @@ Depedencies: {
                     return !c.data('rendered');
                 });
                 if (unrendered.count() > 0) {
-                    unrendered.append(domElem).data('rendered', true);
+                    unrendered.append(domElem).data('rendered', true).attr('rendered', true).addClass('rendered');
                 }
                 return unrendered.count() > 0 || $this.components.length <= 0;
             });

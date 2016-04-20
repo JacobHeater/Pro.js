@@ -19,13 +19,14 @@ Version: 2.0
     pro.module('collections', pro.object({
         extend: pro.extend,
         enumerable: pro.$class('pro.collections.enumerable', function (array, config) {
-            var copy = array || [],
-            $this = this,
-            renderEnumerable = function (_array_) {
+            var copy = array || [];
+            var $this = this;
+            var renderEnumerable = function (_array_) {
+                updateEnumerable();
                 return pro.collections.asEnumerable(_array_);
-            },
-            indexer = 0,
-            settings = pro.extend({
+            };
+            var indexer = 0;
+            var settings = pro.extend({
                 output: function (e) {
                     return e;
                 },
@@ -40,8 +41,16 @@ Version: 2.0
                         return e;
                     },
                     output: null
+                },
+                updateEnumerable: function () {
+
                 }
             }, config || {});
+            var updateEnumerable = function () {
+                $this.length = $this.count();
+                $this.peek = copy.slice(0);
+                settings.updateEnumerable($this);
+            };
             if (pro.isObject(copy) && !pro.isArray(copy) && !pro.canEnumerate(copy) && !pro.isEnumerable(copy)) {
                 var _temp = [];
                 pro.enumerateObject(copy, function (key, value) {
@@ -79,6 +88,7 @@ Version: 2.0
                 if (pro.isClass(enumerable) && enumerable.is(pro.collections.enumerable)) {
                     enumerable = enumerable.concat(this);
                 }
+                updateEnumerable();
                 return enumerable;
             };
             this.where = function (predicate) {
@@ -124,7 +134,7 @@ Version: 2.0
                     }
                 } else {
                     sorted = worker.sort(function (a, b) {
-                        predicate.call(_this, a, b);
+                        return predicate.call(_this, a, b);
                     });
                 }
                 var n = renderEnumerable(sorted);
@@ -159,6 +169,7 @@ Version: 2.0
                 return settings.output(n);
             };
             this.contains = function (item) {
+                updateEnumerable();
                 return this.indexOf(item) > -1;
             };
             this.take = function (count, endIndex) {
@@ -194,6 +205,7 @@ Version: 2.0
                 return pro.isFunction(settings.select.output) ? settings.select.output(n) : settings.output(n);
             };
             this.stringify = function (separator) {
+                updateEnumerable();
                 return this.toArray().join(separator || '');
             };
             this.distinct = function () {
@@ -222,6 +234,7 @@ Version: 2.0
                 if (pro.isFunction(filter)) {
                     return this.where(filter).atIndex(0);
                 }
+                updateEnumerable();
                 return this.atIndex(0);
             };
             this.count = function () {
@@ -232,6 +245,7 @@ Version: 2.0
                     var filtered = this.where(filter);
                     return filtered.atIndex(filtered.count() - 1);
                 }
+                updateEnumerable();
                 return this.atIndex(this.count() - 1);
             };
             this.reverse = function () {
@@ -243,12 +257,15 @@ Version: 2.0
                 if (pro.isNumber(index)) {
                     result = copy[index];
                 }
+                updateEnumerable();
                 return result;
             };
             this.indexOf = function (obj) {
+                updateEnumerable();
                 return copy.indexOf(obj);
             };
             this.toArray = function () {
+                updateEnumerable();
                 return copy.slice(0);
             };
             this.flatten = function () {
@@ -257,12 +274,14 @@ Version: 2.0
             };
             this.toList = function () {
                 var n = new pro.collections.list(this.toArray());
+                updateEnumerable();
                 return n;
             };
             this.toTypedList = function (T) {
                 if (!pro.isFunction(T)) {
                     throw new Error('Argument "T" must be a function to identify the prototype.');
                 }
+                updateEnumerable();
                 return new pro.collections.typedList(T, this.toArray());
             };
             this.toDictionary = function (keySelector) {
@@ -282,14 +301,17 @@ Version: 2.0
                     });
                 }
                 var n = new pro.collections.dictionary(worker);
+                updateEnumerable();
                 return n;
             };
             this.toStack = function () {
                 var n = new pro.collections.stack(this.toArray());
+                updateEnumerable();
                 return n;
             };
             this.toQueue = function () {
                 var n = new pro.collections.queue(this.toArray());
+                updateEnumerable();
                 return n;
             };
             this.add = function (item) {
@@ -352,30 +374,38 @@ Version: 2.0
                 pro.$for(copy, function (i, o) {
                     fn.call(_this, i, o);
                 });
+                updateEnumerable();
                 return this;
             };
             this.current = function () {
+                updateEnumerable();
                 return this.atIndex(indexer);
             };
             this.next = function () {
                 indexer = (indexer + 1) < this.count() ? indexer + 1 : this.count();
+                updateEnumerable();
                 return this;
             };
             this.previous = function () {
                 indexer = (indexer - 1) > 0 ? indexer - 1 : indexer;
+                updateEnumerable();
                 return this;
             };
             this.reset = function () {
                 indexer = 0;
+                updateEnumerable();
                 return this;
             };
             this.getIndex = function () {
+                updateEnumerable();
                 return indexer;
             };
             this.canEnumerate = function () {
+                updateEnumerable();
                 return indexer < this.count();
             };
             this.copyTo = function (target) {
+                updateEnumerable();
                 var copy = pro.copyArray($this.toArray(), target);
                 var n = pro.collections.asEnumerable(copy);
                 return settings.output(n);
@@ -394,6 +424,7 @@ Version: 2.0
                     currentIndex += chunkCount;
                 }
                 var n = chunkContainer;
+                updateEnumerable();
                 return settings.output(n);
             };
             this.clone = function () {
@@ -426,6 +457,7 @@ Version: 2.0
             this.join = function () {
                 return this.toArray().join.apply(this.toArray(), arguments);
             };
+            updateEnumerable();
         }),
         asEnumerable: function (array, config) {
             var _enumerable = null;
@@ -452,7 +484,13 @@ Version: 2.0
             var base = [],
             $this = this,
             postInvoke = function () {
-                $this.initializeBase(base);
+                $this.initializeBase(base, settings);
+            };
+            var settings = {
+                updateEnumerable: function (e) {
+                    $this.peek = e.peek;
+                    $this.length = e.length;
+                }
             };
             if (pro.isEnumerable(init)) {
                 base = init.toArray();
@@ -466,7 +504,7 @@ Version: 2.0
             this.overrides = pro.object({
                 clear: 'clear'
             });
-            this.initializeBase(base);
+            this.initializeBase(base, settings);
             this.asEnumerable = function () {
                 return pro.collections.asEnumerable(base);
             };
